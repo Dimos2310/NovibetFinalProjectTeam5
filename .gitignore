@@ -1,0 +1,24 @@
+# Visual Studio temporary/user files
+.vs/
+*.user
+*.suo
+
+# Build outputs
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+# Rider / JetBrains
+.idea/
+
+# VS Code
+.vscode/
+
+# User-specific and misc
+*.log
+*.tmp
+
+# NuGet
+*.nupkg
+packages/
