@@ -1,17 +1,11 @@
 namespace Domain.Enums;
 
-/// <summary>
-/// Status flag returned as the first field of an IP2C response line
-/// ("status;countryCode2;countryCode3;countryName").
-/// </summary>
+// Maps directly to the first field of an IP2C response, e.g. "1;GR;GRC;Greece".
+// Using an enum here means we never have to compare raw "0"/"1"/"2" strings/numbers
+// anywhere else in the code.
 public enum Ip2CStatus
 {
-    /// <summary>0 - the input was not a valid IP address.</summary>
-    Invalid = 0,
-
-    /// <summary>1 - the IP was resolved successfully.</summary>
-    Success = 1,
-
-    /// <summary>2 - the IP is valid but unknown to the service.</summary>
-    Unknown = 2
+    Invalid = 0,  // input wasn't a valid IP at all
+    Success = 1,  // resolved fine, the country fields are populated
+    Unknown = 2   // valid IP, but IP2C doesn't know which country it belongs to
 }

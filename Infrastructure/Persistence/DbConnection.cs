@@ -1,11 +1,12 @@
-﻿namespace Infrastructure.Persistence;
+namespace Infrastructure.Persistence;
 
-// Ένα σημείο για το connection string — το χρησιμοποιούν ο DbContext,
-// ο Dapper και το design-time factory για τα migrations.
-// ΠΡΟΣΟΧΗ: local dev credential για το SQL Server στο Docker.
-// Σε πραγματικό project θα πήγαινε σε user-secrets / appsettings / env variable.
-public static class DbConnection //we do not want  to make for example new DbConnection() because we want to use the same connection string for all the different ways of connecting to the database
+// One single place for the connection string, used by both the real app (DependencyInjection.cs)
+// and the design-time factory above (needed for Add-Migration/Update-Database). Keeping it in
+// one spot means we can't end up with two different connection strings drifting apart again.
+// NOTE: in a real production project this would live in appsettings/user-secrets/env vars,
+// not committed to source control - fine for a bootcamp project, not fine for real credentials.
+public static class DbConnection
 {
     public const string ConnectionString =
-        "Server=localhost,1433;Database=ExpressYourself;User Id=sa;Password=Test123@;TrustServerCertificate=True"; //Endeiktika
-  }
+        "Server=localhost;Database=ExpressYourself;Trusted_Connection=True;TrustServerCertificate=True;";
+}

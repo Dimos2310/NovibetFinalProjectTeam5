@@ -1,23 +1,36 @@
+using Application.Abstractions;
+using Infrastructure.Persistence;
+using Infrastructure.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure;
 
-/// <summary>
-/// Composition entry point for the Infrastructure layer.
-///
-/// NOTE (P1): this is an intentional skeleton so the solution compiles and runs
-/// end-to-end from day one. The Infrastructure developer fills it in with the
-/// DbContext, repositories, IP2C HTTP client, cache and the hourly background job.
-/// </summary>
+// This is where the Infrastructure project registers everything it provides, so
+// Program.cs just calls AddInfrastructure(...) once instead of listing every service by hand.
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // TODO (Infrastructure dev): register DbContext, repositories,
-        // IIp2CClient, ICacheService and the IP update BackgroundService here.
+        // Prefer whatever's in appsettings.json; fall back to the hardcoded one only if
+        // that's somehow missing (shouldn't normally happen, just a safety net).
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? DbConnection.ConnectionString;
+
+        // This is what actually lets AppDbContext be injected anywhere via its constructor.
+        services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+
+        // Whenever something asks for ICountryRepository/IIpRepository, give it the real
+        // EF Core versions. This is the one line that connects the interfaces to their
+        // actual implementation - nothing else in the app needs to know EF exists.
+        services.AddScoped<ICountryRepository, CountryRepository>();
+        services.AddScoped<IIpRepository, IpRepository>();
+
+        // TODO (Infrastructure dev): register IIp2CClient, ICacheService and the
+        // IP update BackgroundService here once those pieces land.
         return services;
     }
 }

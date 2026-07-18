@@ -1,19 +1,16 @@
 namespace Domain.Entities;
 
-/// <summary>
-/// Aggregate root that represents a country as returned by the IP2C service.
-/// The two-letter ISO code is the natural key used to link an <see cref="Ip"/> to its country.
-/// </summary>
+// This class represents one row in the "Countries" table.
 public class Country
 {
     public int Id { get; set; }
 
-    /// <summary>ISO 3166-1 alpha-2 code (e.g. "GR"). Natural key.</summary>
+    // The 2-letter code (e.g. "GR") is what we actually use to identify a country
+    // everywhere else in the app - it's set as the real primary key in the DB config,
+    // Id above just exists because EF likes having one, but we don't use it for anything.
     public required string TwoLetterCode { get; set; }
 
-    /// <summary>ISO 3166-1 alpha-3 code (e.g. "GRC").</summary>
     public required string ThreeLetterCode { get; set; }
 
-    /// <summary>Human-readable country name (e.g. "Greece").</summary>
     public required string CountryName { get; set; }
 }
