@@ -1,4 +1,4 @@
-using Domain;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
@@ -20,7 +20,7 @@ public class AppDbContext : DbContext
             entity.HasKey(c => c.TwoLetterCode); //theoro oti mporei na einai primary key to TwoLetterCode kathos den xreiazetai epipleon int pk , ta 2 grammata tis xwras einai enough gia anagnorisi kai diakrisi
             entity.Property(c => c.TwoLetterCode).HasMaxLength(2).IsFixedLength();//always to be 2 chars
             entity.Property(c => c.ThreeLetterCode).IsRequired().HasMaxLength(3).IsFixedLength(); //not null same logic as before
-            entity.Property(c => c.Name).IsRequired().HasMaxLength(100);//not null, max length 100 chars
+            entity.Property(c => c.CountryName).IsRequired().HasMaxLength(100);//not null, max length 100 chars
         });
 
         modelBuilder.Entity<Ip>(entity =>
@@ -33,7 +33,7 @@ public class AppDbContext : DbContext
             entity.HasOne<Country>() //one ip has one country, one country can have many ips
                   .WithMany()
                   .HasForeignKey(i => i.CountryTwoLetterCode);
-            entity.Property(i => i.UpdatedAt);
+            entity.Property(i => i.LastUpdated).IsRequired();
         });
     }
 }
