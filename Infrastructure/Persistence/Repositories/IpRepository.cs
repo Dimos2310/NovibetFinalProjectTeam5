@@ -33,7 +33,6 @@ public class IpRepository : IIpRepository
 
     public async Task<IReadOnlyList<Ip>> GetBatchAsync(int skip, int take, CancellationToken ct = default)
         => await _context.Ips
-            .AsNoTracking() // we're only reading these, not going to change and save them, so this skips some EF bookkeeping and is faster
             .OrderBy(i => i.Id) // need a stable order, otherwise skip/take could return overlapping or missing rows between calls
             .Skip(skip)
             .Take(take)
