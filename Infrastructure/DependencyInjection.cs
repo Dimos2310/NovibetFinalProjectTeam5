@@ -4,6 +4,7 @@ using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Infrastructure.BackgroundJobs;
 
 namespace Infrastructure;
 
@@ -29,8 +30,9 @@ public static class DependencyInjection
         services.AddScoped<ICountryRepository, CountryRepository>();
         services.AddScoped<IIpRepository, IpRepository>();
 
-        // TODO (Infrastructure dev): register IIp2CClient, ICacheService and the
-        // IP update BackgroundService here once those pieces land.
+        // Task 2: εγγράφει options + IIpRefreshService + τον hourly BackgroundService.
+        services.AddIpRefreshJob(configuration);
+
         return services;
     }
 }
