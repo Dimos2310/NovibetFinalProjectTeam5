@@ -1,4 +1,6 @@
 using Application.Abstractions;
+using Application.Interfaces;
+using Infrastructure.ExternalServices;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +14,7 @@ namespace Infrastructure;
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services,
+        this IServiceCollection services,\
         IConfiguration configuration)
     {
         // Prefer whatever's in appsettings.json; fall back to the hardcoded one only if
@@ -31,6 +33,11 @@ public static class DependencyInjection
 
         // TODO (Infrastructure dev): register IIp2CClient, ICacheService and the
         // IP update BackgroundService here once those pieces land.
+        services.AddHttpClient<IIp2CClient, Ip2CClient>(client =>
+        {
+            client.BaseAddress = new Uri("https://ip2c.org/");
+        });
+        //check if ok
         return services;
     }
 }
