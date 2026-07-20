@@ -3,11 +3,11 @@ using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Presentation
+// Επίπεδο παρουσίασης
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// Layer composition — each layer owns its own registrations.
+// Σύνθεση των layers - κάθε layer δηλώνει μόνο του τι παρέχει.
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
