@@ -14,8 +14,7 @@ namespace Infrastructure;
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services,\
-        IConfiguration configuration)
+        this IServiceCollection services, IConfiguration configuration)
     {
         // Prefer whatever's in appsettings.json; fall back to the hardcoded one only if
         // that's somehow missing (shouldn't normally happen, just a safety net).
