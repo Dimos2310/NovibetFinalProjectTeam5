@@ -3,14 +3,15 @@ using Application.DTOs;
 namespace Application.Interfaces;
 
 /// <summary>
-/// Abstraction over the external IP2C web service. Keeps the application logic free of
-/// any knowledge about HTTP or the ip2c.org host, and lets tests supply a fake.
+/// Αφαίρεση πάνω από το εξωτερικό web service IP2C. Κρατά τη λογική της εφαρμογής
+/// ανεξάρτητη από οτιδήποτε αφορά HTTP ή τον host ip2c.org, και επιτρέπει στα tests
+/// να δώσουν ένα ψεύτικο (fake) client.
 /// </summary>
 public interface IIp2CClient
 {
     /// <summary>
-    /// Calls IP2C for the given IP and returns the parsed result
-    /// (status + country codes + name).
+    /// Καλεί το IP2C για τη δοθείσα IP και επιστρέφει το parsed αποτέλεσμα
+    /// (status + κωδικοί χώρας + όνομα).
     /// </summary>
     Task<Ip2CResult> GetCountryInfoAsync(string ip, CancellationToken cancellationToken = default);
 }

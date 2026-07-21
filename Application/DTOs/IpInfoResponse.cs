@@ -1,9 +1,9 @@
 namespace Application.DTOs;
 
 /// <summary>
-/// Response contract of the "IP information" endpoint (Task 1).
-/// Kept separate from the <c>Country</c> entity so the public API shape and the
-/// database schema can evolve independently.
+/// Συμβόλαιο απάντησης του endpoint "πληροφορίες IP" (Task 1).
+/// Κρατιέται ξεχωριστό από την οντότητα <c>Country</c>, ώστε το δημόσιο σχήμα του API
+/// και το σχήμα της βάσης να μπορούν να εξελίσσονται ανεξάρτητα.
 /// </summary>
 public record IpInfoResponse(
     string CountryName,
