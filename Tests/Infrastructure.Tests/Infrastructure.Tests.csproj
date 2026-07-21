@@ -13,14 +13,11 @@
          the real constraints (unique Address, unique TwoLetterCode, the FK) and the
          race-condition handling in the repositories actually work. -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.10" />
-<<<<<<< HEAD
     <!-- Pin transitively-pulled SQLitePCLRaw above 2.1.11: that version bundles a SQLite
          build older than 3.50.2, which has a known high-severity memory corruption CVE
          (GHSA-2m69-gcr7-jv3q). This direct reference overrides the transitive one. -->
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.4" />
-=======
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.10" />
->>>>>>> origin/cache-tests
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">

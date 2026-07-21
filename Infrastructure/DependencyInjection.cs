@@ -1,12 +1,9 @@
 using Application.Abstractions;
-<<<<<<< HEAD
+using Application.Interfaces;
+using Infrastructure.Cache;
 using Infrastructure.Configuration;
 using Application.Interfaces;
 using Infrastructure.ExternalServices;
-=======
-using Application.Interfaces;
-using Infrastructure.Cache;
->>>>>>> origin/cache-tests
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -45,18 +42,15 @@ public static class DependencyInjection
 
         // TODO (Infrastructure dev): register IIp2CClient, ICacheService and the
         // IP update BackgroundService here once those pieces land.
-<<<<<<< HEAD
+        services.AddMemoryCache();
+        services.AddSingleton<ICacheService, MemoryCacheService>();
+
+
         services.AddHttpClient<IIp2CClient, Ip2CClient>(client =>
         {
             client.BaseAddress = new Uri("https://ip2c.org/");
         });
         //check if ok
-=======
-        services.AddMemoryCache();
-        services.AddSingleton<ICacheService, MemoryCacheService>();
-
-
->>>>>>> origin/cache-tests
         return services;
     }
 }
