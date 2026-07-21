@@ -1,10 +1,7 @@
 using Application.Abstractions;
-<<<<<<< HEAD
 using Infrastructure.Configuration;
-=======
 using Application.Interfaces;
 using Infrastructure.ExternalServices;
->>>>>>> origin/feature/ip2c-client
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
