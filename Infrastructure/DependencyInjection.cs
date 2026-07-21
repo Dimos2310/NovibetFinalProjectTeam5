@@ -9,6 +9,7 @@ using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Infrastructure.BackgroundJobs;
 
 namespace Infrastructure;
 
@@ -33,6 +34,7 @@ public static class DependencyInjection
         services.AddScoped<ICountryRepository, CountryRepository>();
         services.AddScoped<IIpRepository, IpRepository>();
 
+<<<<<<< HEAD
         // Binds each settings section from appsettings.json to its options class, so
         // whoever builds the cache/job/IP2C client can inject IOptions<T> instead of
         // hardcoding these values or reading IConfiguration directly.
@@ -51,6 +53,11 @@ public static class DependencyInjection
             client.BaseAddress = new Uri("https://ip2c.org/");
         });
         //check if ok
+=======
+        // Task 2: εγγράφει options + IIpRefreshService + τον hourly BackgroundService.
+        services.AddIpRefreshJob(configuration);
+
+>>>>>>> origin/LeonardoVreka
         return services;
     }
 }
