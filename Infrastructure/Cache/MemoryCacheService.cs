@@ -53,5 +53,7 @@ namespace Infrastructure.Cache
             _memoryCache.Remove(key);
             return Task.CompletedTask;
         }
+
+      
     }
 }
