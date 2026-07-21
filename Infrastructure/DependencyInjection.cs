@@ -1,4 +1,6 @@
 using Application.Abstractions;
+using Application.Interfaces;
+using Infrastructure.Cache;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +33,10 @@ public static class DependencyInjection
 
         // TODO (Infrastructure dev): register IIp2CClient, ICacheService and the
         // IP update BackgroundService here once those pieces land.
+        services.AddMemoryCache();
+        services.AddSingleton<ICacheService, MemoryCacheService>();
+
+
         return services;
     }
 }
