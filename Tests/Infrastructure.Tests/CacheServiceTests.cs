@@ -1,5 +1,7 @@
 ﻿using Infrastructure.Cache;
+using Infrastructure.Configuration;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,7 +19,10 @@ namespace Infrastructure.Tests
 
         public MemoryCacheServiceTests()
         {
-            _sut = new MemoryCacheService(_cache);
+            // TtlMinutes here doesn't matter for these tests (none of them wait long
+            // enough to hit an expiry) - just needs a valid CacheOptions to satisfy
+            // the constructor now that it reads a default TTL from it.
+            _sut = new MemoryCacheService(_cache, Options.Create(new CacheOptions()));
         }
 
         [Fact]

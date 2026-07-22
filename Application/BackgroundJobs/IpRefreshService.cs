@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions;   // IIpRepository
+using Application.Caching;        // CacheKeys
 using Application.DTOs;           // Ip2CResult
 using Application.Interfaces;     // IIp2CClient, ICacheService
 using Domain.Entities;            // Ip
@@ -130,9 +131,9 @@ public sealed class IpRefreshService : IIpRefreshService /// sealed gt kanenas d
         // pali gia kathe ip pou allakse svinei tin palia egrafi apo tin cache gia na min exei palia dedomena
         foreach (var ip in changed)
         {
-            // ⚠ RECONCILE: this key must match the one Task 1 uses in ICacheService.SetAsync.
-            // Best: both sides share a single CacheKeys.ForIp(address) helper so they can't drift.
-            await _cache.RemoveAsync(ip.Address, cancellationToken);
+            // ✅ RECONCILED: shared with Task 1 via CacheKeys.ForIp, so this can never
+            // drift from the key IpInfoService.SetAsync actually wrote under.
+            await _cache.RemoveAsync(CacheKeys.ForIp(ip.Address), cancellationToken);
         }
         // epistrefei posa ip allaksan
         return changed.Count;

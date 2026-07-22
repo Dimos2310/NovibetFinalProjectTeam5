@@ -17,7 +17,10 @@ public static class DependencyInjection
         // είναι scoped (τυλίγει το DbContext που ζει όσο το κάθε request).
         services.AddScoped<IReportService, ReportService>();
 
-        // TODO: το IIpInfoService (Task 1) δηλώνεται εδώ μόλις παραδοθεί η υλοποίησή του.
+        // Task 1 - IP lookup endpoint (cache -> βάση -> IP2C). Ίδιος λόγος για Scoped:
+        // εξαρτάται από τα ίδια scoped repositories.
+        services.AddScoped<IIpInfoService, IpInfoService>();
+
         return services;
     }
 }

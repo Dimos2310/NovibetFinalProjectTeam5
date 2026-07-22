@@ -1,5 +1,7 @@
 ﻿using Application.Interfaces;
+using Infrastructure.Configuration;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 
 namespace Infrastructure.Cache
@@ -10,12 +12,19 @@ namespace Infrastructure.Cache
     public class MemoryCacheService : ICacheService
     {
         private readonly IMemoryCache _memoryCache;
+        private readonly TimeSpan _defaultTtl;
 
         // Pairnoume to IMemoryCache meso DI kai to kratame gia na to xrisimopoioume parakato.
-        public MemoryCacheService(IMemoryCache cache) => _memoryCache = cache;
+        // Pairnoume kai to CacheOptions gia na exoume ena default TTL otan o caller den
+        // dosei o idios ena (px to IpInfoService.SetAsync den perase ttl) - alliws to
+        // "Cache:TtlMinutes" sto appsettings tha itan mia rythmisi pou kaneis den diavazei.
+        public MemoryCacheService(IMemoryCache cache, IOptions<CacheOptions> cacheOptions)
+        {
+            _memoryCache = cache;
+            _defaultTtl = TimeSpan.FromMinutes(cacheOptions.Value.TtlMinutes);
+        }
 
        
-
 
         public Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
@@ -32,11 +41,12 @@ namespace Infrastructure.Cache
         {
 
             // Ftiaxnoume tis rythmiseis tis eggrafis kai orizoume ttl.
-            // An to ttl einai null, i eggrafi den lixei pote.
+            // An o caller den dosei diko tou ttl, xrisimopoioume to default apo to
+            // appsettings ("Cache:TtlMinutes") anti na apothikevoume gia panta.
 
             var options = new MemoryCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = ttl
+                AbsoluteExpirationRelativeToNow = ttl ?? _defaultTtl
             };
 
             // Apothikevoume tin timi sto cache me to sygkekrimeno key
