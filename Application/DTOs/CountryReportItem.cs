@@ -1,8 +1,8 @@
 namespace Application.DTOs;
 
 /// <summary>
-/// A single row of the report endpoint (Task 3): how many addresses we hold for a
-/// country and when one of them was last updated.
+/// Μία γραμμή του report endpoint (Task 3): πόσες διευθύνσεις κρατάμε για μια χώρα και
+/// πότε ενημερώθηκε τελευταία φορά κάποια από αυτές.
 /// </summary>
 public record CountryReportItem(
     string CountryName,
