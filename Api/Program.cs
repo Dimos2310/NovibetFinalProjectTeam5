@@ -1,3 +1,4 @@
+using Api.Middleware;
 using Application;
 using Infrastructure;
 
@@ -12,6 +13,10 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
+
+// First in the pipeline on purpose - if anything below throws (including routing or
+// a controller action), this is what catches it and turns it into a proper response.
+app.UseExceptionHandling();
 
 app.UseHttpsRedirection();
 app.MapControllers();
