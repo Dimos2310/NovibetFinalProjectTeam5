@@ -44,6 +44,10 @@ namespace Infrastructure.ExternalServices;
         {
             return new Ip2CResult(status, null, null, null); //if not success return the status and nulls no need for extra fields
         }
+<<<<<<< HEAD
         return new Ip2CResult(status, parts[1], parts[2], parts[3]); //if success return the status and the other fields
+=======
+        return new Ip2CResult(status, parts[1], parts[2], parts[3]); //if success return the status and the other fieldsa
+>>>>>>> 636d28f64219dcc9db3298d93335691298663db5
     }
 }
