@@ -31,11 +31,11 @@ public static class DependencyInjection
         services.AddScoped<IIpRepository, IpRepository>();
 
         // Binds each settings section from appsettings.json to its options class, so
-        // whoever builds the cache/job/IP2C client can inject IOptions<T> instead of
-        // hardcoding these values or reading IConfiguration directly.
+        // whoever builds the cache/IP2C client can inject IOptions<T> instead of
+        // hardcoding these values or reading IConfiguration directly. (Task 2's own
+        // options - IpRefreshOptions - are bound separately, inside AddIpRefreshJob below.)
         services.Configure<Ip2COptions>(configuration.GetSection(Ip2COptions.SectionName));
         services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.SectionName));
-        services.Configure<IpUpdateJobOptions>(configuration.GetSection(IpUpdateJobOptions.SectionName));
 
         // TODO (Infrastructure dev): register IIp2CClient, ICacheService and the
         // IP update BackgroundService here once those pieces land.

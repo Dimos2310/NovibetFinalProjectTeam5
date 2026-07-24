@@ -26,8 +26,8 @@ public class AppDbContext : DbContext
         {
             entity.ToTable("Countries");
 
-            // TwoLetterCode is the real primary key here, not the Id property - a country
-            // code is already unique on its own, so we don't need a separate int id for it.
+            // TwoLetterCode is the primary key here - Country doesn't have a separate int
+            // Id at all, since a 2-letter ISO code is already unique on its own.
             entity.HasKey(c => c.TwoLetterCode);
             entity.Property(c => c.TwoLetterCode).HasMaxLength(2).IsFixedLength();
 
