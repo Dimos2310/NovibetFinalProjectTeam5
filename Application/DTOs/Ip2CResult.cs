@@ -3,9 +3,9 @@ using Domain.Enums;
 namespace Application.DTOs;
 
 /// <summary>
-/// Structured, parsed form of a raw IP2C response line
-/// ("status;countryCode2;countryCode3;countryName"), so a raw string never leaks
-/// into the rest of the system.
+/// Δομημένη, parsed μορφή μιας ακατέργαστης γραμμής απάντησης του IP2C
+/// ("status;countryCode2;countryCode3;countryName"), ώστε να μη διαρρέει ποτέ σκέτο
+/// string στο υπόλοιπο σύστημα.
 /// </summary>
 public record Ip2CResult(
     Ip2CStatus Status,
@@ -13,6 +13,6 @@ public record Ip2CResult(
     string? ThreeLetterCode,
     string? CountryName)
 {
-    /// <summary>True only when the IP was resolved successfully.</summary>
+    /// <summary>True μόνο όταν η IP επιλύθηκε επιτυχώς.</summary>
     public bool IsSuccess => Status == Ip2CStatus.Success;
 }

@@ -20,7 +20,8 @@ public class ReportController : ControllerBase
     /// Διευθύνσεις ανά χώρα, μαζί με την τελευταία φορά που ενημερώθηκε κάποια από αυτές.
     /// <param name="countryCodes">
     /// Προαιρετικοί διψήφιοι κωδικοί χωρών για φιλτράρισμα, π.χ.
-    /// <c>?countryCodes=GR&amp;countryCodes=IT</c>.
+    /// <c>?countryCodes=GR&amp;countryCodes=IT</c>. Παράλειψέ το για να πάρεις όλες τις χώρες.
+    /// </param>
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<CountryReportItem>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<CountryReportItem>>> GetReport(
