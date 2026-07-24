@@ -2,11 +2,14 @@ using Application.Abstractions;
 using Application.Interfaces;
 using Infrastructure.Cache;
 using Infrastructure.Configuration;
+using Infrastructure.ExternalServices;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Infrastructure.BackgroundJobs;
 
 namespace Infrastructure;
 
@@ -15,8 +18,7 @@ namespace Infrastructure;
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services,
-        IConfiguration configuration)
+        this IServiceCollection services, IConfiguration configuration)
     {
         // Prefer whatever's in appsettings.json; fall back to the hardcoded one only if
         // that's somehow missing (shouldn't normally happen, just a safety net).
@@ -39,11 +41,19 @@ public static class DependencyInjection
         services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.SectionName));
         services.Configure<IpUpdateJobOptions>(configuration.GetSection(IpUpdateJobOptions.SectionName));
 
-        // TODO (Infrastructure dev): register IIp2CClient, ICacheService and the
-        // IP update BackgroundService here once those pieces land.
         services.AddMemoryCache();
         services.AddSingleton<ICacheService, MemoryCacheService>();
 
+        // BaseUrl comes from Ip2COptions (bound above), not hardcoded, so changing
+        // appsettings.json is actually enough to point this at a different host.
+        services.AddHttpClient<IIp2CClient, Ip2CClient>((provider, client) =>
+        {
+            var ip2cOptions = provider.GetRequiredService<IOptions<Ip2COptions>>().Value;
+            client.BaseAddress = new Uri(ip2cOptions.BaseUrl);
+        });
+
+        // Task 2: εγγράφει options + IIpRefreshService + τον hourly BackgroundService.
+        services.AddIpRefreshJob(configuration);
 
         return services;
     }
