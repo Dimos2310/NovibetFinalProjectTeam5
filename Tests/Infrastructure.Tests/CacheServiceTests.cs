@@ -1,75 +1,51 @@
-﻿using Infrastructure.Cache;
+using Infrastructure.Cache;
 using Infrastructure.Configuration;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Infrastructure.Tests
 {
-
     public class MemoryCacheServiceTests
     {
-
         private readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
         private readonly MemoryCacheService _sut;
 
-
         public MemoryCacheServiceTests()
         {
-            // TtlMinutes here doesn't matter for these tests (none of them wait long
-            // enough to hit an expiry) - just needs a valid CacheOptions to satisfy
-            // the constructor now that it reads a default TTL from it.
             _sut = new MemoryCacheService(_cache, Options.Create(new CacheOptions()));
         }
 
         [Fact]
-
         public async Task SetAsync_then_GetAsync_returnStoredValue()
         {
-            //Arrange string key, T value, TimeSpan? ttl = null,   
-            //CancellationToken cancellationToken
             var key = "any-key";
             var value = "Greece";
-           
 
-            //Act
             await _sut.SetAsync(key, value);
             var result = await _sut.GetAsync<string>(key);
 
-            //Assert
             Assert.Equal(value, result);
         }
-
 
         [Fact]
         public async Task GetAsync_returns_default_when_key_is_missing()
         {
-            // Arrange
-            var key = "missing-key";   // key που δεν το βάλαμε ποτέ στο cache
+            var result = await _sut.GetAsync<string>("missing-key");
 
-            // Act
-            var result = await _sut.GetAsync<string>(key);
-
-            // Assert
-            Assert.Null(result);       // σε miss, το TryGetValue δίνει default(string) = null
+            Assert.Null(result);
         }
 
         [Fact]
         public async Task RemoveAsync_deletes_the_entry()
         {
-            // Arrange
             var key = "any-key";
-            await _sut.SetAsync(key, "Greece");   // πρώτα set
+            await _sut.SetAsync(key, "Greece");
 
-            // Act
-            await _sut.RemoveAsync(key);          // το σβήνουμε
+            await _sut.RemoveAsync(key);
             var result = await _sut.GetAsync<string>(key);
 
-            // Assert
-            Assert.Null(result);                  // μετά το remove δεν πρέπει να υπάρχει
+            Assert.Null(result);
         }
     }
 }

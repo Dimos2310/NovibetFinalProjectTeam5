@@ -35,7 +35,6 @@ public class CountryRepositoryTests : IClassFixture<SqliteTestDatabase>
         ICountryRepository repo = new CountryRepository(context);
 
         await repo.AddIfNotExistsAsync(new Country { TwoLetterCode = "IT", ThreeLetterCode = "ITA", CountryName = "Italy" });
-        // Same code again - simulates a second concurrent/duplicate call. Should not throw.
         await repo.AddIfNotExistsAsync(new Country { TwoLetterCode = "IT", ThreeLetterCode = "ITA", CountryName = "Italy" });
 
         await using var verifyContext = _db.CreateContext();
@@ -46,8 +45,8 @@ public class CountryRepositoryTests : IClassFixture<SqliteTestDatabase>
     [Fact]
     public async Task AddIfNotExists_survives_a_genuine_race_on_the_same_code()
     {
-        // Two separate DbContext instances (as two concurrent requests would have),
-        // both trying to insert the same brand-new code without seeing each other first.
+        // Two separate DbContext instances, as two concurrent requests would have,
+        // both inserting the same brand-new code without seeing each other first.
         await using var contextA = _db.CreateContext();
         await using var contextB = _db.CreateContext();
         ICountryRepository repoA = new CountryRepository(contextA);
@@ -55,14 +54,13 @@ public class CountryRepositoryTests : IClassFixture<SqliteTestDatabase>
 
         var country = new Country { TwoLetterCode = "FR", ThreeLetterCode = "FRA", CountryName = "France" };
 
-        // Neither has saved yet, so both repos' "exists?" check will say no.
         await repoA.AddIfNotExistsAsync(country);
         await repoB.AddIfNotExistsAsync(
             new Country { TwoLetterCode = "FR", ThreeLetterCode = "FRA", CountryName = "France" });
 
         await using var verifyContext = _db.CreateContext();
         var count = await verifyContext.Countries.CountAsync(c => c.TwoLetterCode == "FR");
-        Assert.Equal(1, count); // exactly one row survived, and neither call threw
+        Assert.Equal(1, count);
     }
 }
 
@@ -84,7 +82,7 @@ public class IpRepositoryTests : IClassFixture<SqliteTestDatabase>
 
         var ip = new Ip { Address = "1.2.3.4", CountryTwoLetterCode = "GR", LastUpdated = DateTime.UtcNow };
         await ipRepo.AddAsync(ip);
-        await ipRepo.SaveChangesAsync(); // proves Add + separate SaveChanges actually persists
+        await ipRepo.SaveChangesAsync();
 
         var found = await ipRepo.GetByAddressAsync("1.2.3.4");
         Assert.NotNull(found);

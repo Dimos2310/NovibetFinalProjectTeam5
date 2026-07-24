@@ -13,46 +13,31 @@ using Infrastructure.BackgroundJobs;
 
 namespace Infrastructure;
 
-// This is where the Infrastructure project registers everything it provides, so
-// Program.cs just calls AddInfrastructure(...) once instead of listing every service by hand.
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services, IConfiguration configuration)
     {
-        // Prefer whatever's in appsettings.json; fall back to the hardcoded one only if
-        // that's somehow missing (shouldn't normally happen, just a safety net).
         var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? DbConnection.ConnectionString;
 
-        // This is what actually lets AppDbContext be injected anywhere via its constructor.
         services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
-        // Whenever something asks for ICountryRepository/IIpRepository, give it the real
-        // EF Core versions. This is the one line that connects the interfaces to their
-        // actual implementation - nothing else in the app needs to know EF exists.
         services.AddScoped<ICountryRepository, CountryRepository>();
         services.AddScoped<IIpRepository, IpRepository>();
 
-        // Binds each settings section from appsettings.json to its options class, so
-        // whoever builds the cache/IP2C client can inject IOptions<T> instead of
-        // hardcoding these values or reading IConfiguration directly. (Task 2's own
-        // options - IpRefreshOptions - are bound separately, inside AddIpRefreshJob below.)
         services.Configure<Ip2COptions>(configuration.GetSection(Ip2COptions.SectionName));
         services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.SectionName));
 
         services.AddMemoryCache();
         services.AddSingleton<ICacheService, MemoryCacheService>();
 
-        // BaseUrl comes from Ip2COptions (bound above), not hardcoded, so changing
-        // appsettings.json is actually enough to point this at a different host.
         services.AddHttpClient<IIp2CClient, Ip2CClient>((provider, client) =>
         {
             var ip2cOptions = provider.GetRequiredService<IOptions<Ip2COptions>>().Value;
             client.BaseAddress = new Uri(ip2cOptions.BaseUrl);
         });
 
-        // Task 2: εγγράφει options + IIpRefreshService + τον hourly BackgroundService.
         services.AddIpRefreshJob(configuration);
 
         return services;

@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
-// EF Core implementation of IIpRepository - same idea as CountryRepository.
 public class IpRepository : IIpRepository
 {
     private readonly AppDbContext _context;
@@ -21,9 +20,6 @@ public class IpRepository : IIpRepository
 
     public async Task<Ip> AddAsync(Ip ip, CancellationToken ct = default)
     {
-        // This only stages the new Ip in memory - it does NOT hit the database yet.
-        // Task 1's flow adds a Country and an Ip together and wants to save both at
-        // once, so saving is a separate step (SaveChangesAsync below) the caller controls.
         await _context.Ips.AddAsync(ip, ct);
         return ip;
     }
@@ -33,7 +29,8 @@ public class IpRepository : IIpRepository
 
     public async Task<IReadOnlyList<Ip>> GetBatchAsync(int skip, int take, CancellationToken ct = default)
         => await _context.Ips
-            .OrderBy(i => i.Id) // need a stable order, otherwise skip/take could return overlapping or missing rows between calls
+            .AsNoTracking()
+            .OrderBy(i => i.Id) // stable order so skip/take can't overlap or skip rows
             .Skip(skip)
             .Take(take)
             .ToListAsync(ct);
@@ -42,23 +39,17 @@ public class IpRepository : IIpRepository
         string[]? countryCodes,
         CancellationToken ct = default)
     {
-        // Joins every Ip to its Country so we can group by country name below.
-        // This whole query runs as SQL on the database - we're not loading every
-        // row into memory and grouping it ourselves in C#.
         var query =
             from ip in _context.Ips.AsNoTracking()
             join country in _context.Countries.AsNoTracking()
                 on ip.CountryTwoLetterCode equals country.TwoLetterCode
             select new { ip.LastUpdated, country.TwoLetterCode, country.CountryName };
 
-        // Only filter if the caller actually passed specific codes - null/empty means "all countries".
         if (countryCodes is { Length: > 0 })
         {
             query = query.Where(x => countryCodes.Contains(x.TwoLetterCode));
         }
 
-        // One group per country: count how many Ip rows landed in it, and find the
-        // most recent LastUpdated among them - exactly the shape Task 3 asks for.
         return await query
             .GroupBy(x => x.CountryName)
             .Select(g => new CountryReportItem(

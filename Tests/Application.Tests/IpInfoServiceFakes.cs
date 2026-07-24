@@ -5,9 +5,6 @@ using Domain.Entities;
 
 namespace Application.Tests;
 
-// In-memory υποκατάστατο του ICacheService - πραγματικό get/set/remove χωρίς IMemoryCache,
-// έτσι ώστε το IpInfoService να ελέγχεται χωρίς Infrastructure. Μετράει επίσης τις κλήσεις,
-// ώστε ένα test να μπορεί να επιβεβαιώσει ότι πραγματικά χτυπήθηκε (ή όχι) η cache.
 internal sealed class FakeCacheService : ICacheService
 {
     private readonly Dictionary<string, object?> _store = new();
@@ -37,8 +34,6 @@ internal sealed class FakeCacheService : ICacheService
     }
 }
 
-// In-memory υποκατάστατο του ICountryRepository. Ξεχωριστό από ένα τυχόν fake στα
-// Infrastructure.Tests - εδώ ελέγχουμε μόνο τη λογική του IpInfoService, όχι EF Core.
 internal sealed class FakeCountryRepository : ICountryRepository
 {
     private readonly Dictionary<string, Country> _countries = new();
@@ -67,10 +62,8 @@ internal sealed class FakeCountryRepository : ICountryRepository
     }
 }
 
-// In-memory υποκατάστατο του IIpRepository που πραγματικά υποστηρίζει το μονοπάτι που
-// χρησιμοποιεί το IpInfoService (GetByAddressAsync / AddAsync / SaveChangesAsync) - σε
-// αντίθεση με το FakeIpRepository του ReportServiceTests, που τα πετάει ως NotSupported
-// επειδή το ReportService δεν τα χρειάζεται καθόλου.
+// Unlike ReportServiceTests' FakeIpRepository, this one actually supports the path
+// IpInfoService uses (GetByAddressAsync / AddAsync / SaveChangesAsync).
 internal sealed class InMemoryIpRepository : IIpRepository
 {
     private readonly Dictionary<string, Ip> _ips = new();
@@ -106,7 +99,6 @@ internal sealed class InMemoryIpRepository : IIpRepository
         return Task.CompletedTask;
     }
 
-    // Δεν χρησιμοποιούνται από το IpInfoService - υπάρχουν μόνο για να ικανοποιηθεί το interface.
     public Task<IReadOnlyList<Ip>> GetBatchAsync(int skip, int take, CancellationToken ct = default)
         => throw new NotSupportedException();
 
@@ -114,8 +106,6 @@ internal sealed class InMemoryIpRepository : IIpRepository
         => throw new NotSupportedException();
 }
 
-// In-memory υποκατάστατο του IIp2CClient - επιστρέφει πάντα το απαντητικό που όρισε το
-// test, και θυμάται με ποια IP κλήθηκε, ώστε ένα test να μπορεί να το επιβεβαιώσει.
 internal sealed class FakeIp2CClient : IIp2CClient
 {
     private readonly Ip2CResult _result;

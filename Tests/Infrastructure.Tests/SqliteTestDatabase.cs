@@ -4,9 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Tests;
 
-// Builds a real (if temporary) database in memory using Sqlite, from the exact same
-// AppDbContext model the real app uses. That means a passing test actually proves the
-// entity config, keys, indexes and foreign key work - not just that the code compiles.
+// Builds a real Sqlite database in memory from the same AppDbContext model the app
+// uses, so a passing test proves the entity config actually works, not just compiles.
 public sealed class SqliteTestDatabase : IDisposable
 {
     private readonly SqliteConnection _connection;
@@ -14,13 +13,10 @@ public sealed class SqliteTestDatabase : IDisposable
     public SqliteTestDatabase()
     {
         _connection = new SqliteConnection("DataSource=:memory:");
-
-        // Sqlite's in-memory database only exists while this connection is open -
-        // closing it would wipe everything, so we keep it open for the whole test run.
-        _connection.Open();
+        _connection.Open(); // in-memory Sqlite only persists while the connection is open
 
         using var context = CreateContext();
-        context.Database.EnsureCreated(); // builds the tables from AppDbContext's model
+        context.Database.EnsureCreated();
     }
 
     public AppDbContext CreateContext()

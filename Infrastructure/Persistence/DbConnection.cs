@@ -1,10 +1,7 @@
 namespace Infrastructure.Persistence;
 
-// One single place for the connection string, used by both the real app (DependencyInjection.cs)
-// and the design-time factory above (needed for Add-Migration/Update-Database). Keeping it in
-// one spot means we can't end up with two different connection strings drifting apart again.
-// NOTE: in a real production project this would live in appsettings/user-secrets/env vars,
-// not committed to source control - fine for a bootcamp project, not fine for real credentials.
+// Single source of truth for the connection string (used by both the real app and
+// AppDbContextFactory). Would move to user-secrets/env vars in a real deployment.
 public static class DbConnection
 {
     public const string ConnectionString =

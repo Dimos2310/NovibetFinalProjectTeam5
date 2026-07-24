@@ -13,7 +13,6 @@ public class Ip2CClientTests
         return (new Ip2CClient(httpClient), handler);
     }
 
-    // Verifies that a successful IP2C response (status 1) is parsed into the correct country codes and name.
     [Fact]
     public async Task GetCountryInfoAsync_parses_a_successful_response()
     {
@@ -28,7 +27,6 @@ public class Ip2CClientTests
         Assert.Equal("Greece", result.CountryName);
     }
 
-    // Verifies that an invalid-IP response (status 0) returns null country info instead of throwing or misreading empty fields.
     [Fact]
     public async Task GetCountryInfoAsync_returns_nulls_for_an_invalid_ip()
     {
@@ -43,7 +41,6 @@ public class Ip2CClientTests
         Assert.Null(result.CountryName);
     }
 
-    // Verifies that an unknown-country response (status 2) also returns null country info, not just the invalid case.
     [Fact]
     public async Task GetCountryInfoAsync_returns_nulls_for_an_unknown_country()
     {
@@ -56,7 +53,6 @@ public class Ip2CClientTests
         Assert.Null(result.TwoLetterCode);
     }
 
-    // Verifies that the IP address is sent correctly as part of the outgoing request URL to ip2c.org.
     [Fact]
     public async Task GetCountryInfoAsync_sends_the_ip_as_the_request_uri()
     {
@@ -68,11 +64,8 @@ public class Ip2CClientTests
         Assert.Equal("https://ip2c.org/1.2.3.4", handler.LastRequest!.RequestUri!.ToString());
     }
 
-    // Καλύπτει ένα πραγματικό bug που βρέθηκε ζωντανά: αν στείλουμε κάτι που δεν είναι
-    // πραγματική IP (π.χ. "GR"), το ip2c.org μπορεί να απαντήσει με πραγματικό HTTP 404
-    // αντί για το αναμενόμενο 200 με "0;;;". Πριν το fix, το GetStringAsync πετούσε
-    // HttpRequestException που έφτανε ασυγκράτητο μέχρι το middleware ως 500. Αυτό
-    // επιβεβαιώνει ότι τώρα το χειριζόμαστε σαν Invalid, όπως ένα κανονικό status=0.
+    // Regression test: ip2c.org can answer a malformed address with a real HTTP error
+    // (e.g. 404) instead of the expected 200 "0;;;" body.
     [Fact]
     public async Task GetCountryInfoAsync_treats_a_non_success_http_response_as_invalid()
     {
